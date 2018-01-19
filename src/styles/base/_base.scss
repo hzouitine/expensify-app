@@ -15,4 +15,10 @@ button{
 button:disabled{
     cursor: default; 
 }
+
+
+.is-active{
+    color : darkblue;
+    font-weight: bold;
+}
 // In base we do the structure style
