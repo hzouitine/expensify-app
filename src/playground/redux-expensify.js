@@ -76,4 +76,3 @@ const demoState = {
         endDate : undefined
     }
 };
-
