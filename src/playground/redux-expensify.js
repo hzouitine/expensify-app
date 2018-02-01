@@ -7,14 +7,14 @@ const addExpense = ({
     description = '',
     note = "",
     amount = 0,
-    creatAt = 0} = {} ) => ({
+    createdAt = 0} = {} ) => ({
         type : 'ADD_EXPENSE',
         expense : {
             id : uuid(),
             description,
             note,
             amount,
-            creatAt
+            createdAt
         }
 });
 
@@ -89,6 +89,23 @@ const filtersReducers = ( state = filtersReducersDefaultState, action) => {
         default : return state;
     }
 }
+
+// get Visibles expenses ( expenses, filters)
+
+const getVisibleExpenses = (expenses, {text, sortBy, startDate, endDate}) =>  {
+    return expenses.filter( (expense) => {
+        const startDateMatch = typeof startDate !== 'number' || expense.createdAt >= startDate;
+        const endDateMatch = typeof endDate !== 'number' || expense.createdAt <= endDate;
+        const textMatch = expense.description.toLowerCase().includes(text.toLowerCase());
+        return startDateMatch && endDateMatch && textMatch; 
+    }).sort( (a,b) => {
+        if( sortBy == 'date')
+            return a.createdAt < b.createdAt ? 1 : -1;
+        if( sortBy == 'amount')
+            return a.amount < b.amount ? 1 : -1;
+    });
+};
+
 // Store Creation
 
 const store = createStore(combineReducers({
@@ -97,22 +114,24 @@ const store = createStore(combineReducers({
 }));
 
 const unsubscribe = store.subscribe ( () => {
-console.log(store.getState());
+    const state = store.getState();
+    const visibleExpense = getVisibleExpenses(state.expenses, state.filters);
+    console.log(visibleExpense);
 });
 
 store.dispatch(addExpense());
-const expenseToRemove = store.dispatch(addExpense({description: 'Rent', amount : 100}));
-const expenseToEdit = store.dispatch(addExpense({description : 'Travel', amount : 700}));
-store.dispatch(removeExpense({ id : expenseToRemove.expense.id}));
-store.dispatch(editExpense(expenseToEdit.expense.id , { amount : 600 }));
+const expenseToRemove = store.dispatch(addExpense({description: 'Rent', amount : 100, createdAt : 150}));
+const expenseToEdit = store.dispatch(addExpense({description : 'Travel', amount : 700, createdAt : -1000}));
+// store.dispatch(removeExpense({ id : expenseToRemove.expense.id}));
+// store.dispatch(editExpense(expenseToEdit.expense.id , { amount : 600 }));
 
-store.dispatch(setTextFilter('rent'));
-store.dispatch(setTextFilter());
+// store.dispatch(setTextFilter('rent'));
+// store.dispatch(setTextFilter());
 store.dispatch(sortByAmount());
 store.dispatch(sortByDate());
-store.dispatch(setStartDate(125));
-store.dispatch(setStartDate());
-store.dispatch(setEndDate(300));
+// store.dispatch(setStartDate(125));
+// store.dispatch(setStartDate());
+// store.dispatch(setEndDate(300));
 
 const demoState = {
     expenses : [{
