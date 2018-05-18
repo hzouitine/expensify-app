@@ -1,6 +1,7 @@
 console.log("app.js");
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
 import {BrowserRouter, Switch, Link,NavLink, Route} from 'react-router-dom';
 import 'normalize.css/normalize.css';
 import './styles/styles.scss';
@@ -19,4 +20,10 @@ const state = store.getState();
 const visibleExpense = getVisibleExpenses(state.expenses, state.filters);
 console.log(visibleExpense);
 console.log(store.getState());
-ReactDOM.render(<AppRouter />,document.getElementById("appRoot"));
+
+const jsx = (
+    <Provider store={store}>
+        <AppRouter />
+    </Provider>
+)
+ReactDOM.render(jsx,document.getElementById("appRoot"));
