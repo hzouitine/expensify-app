@@ -6,16 +6,17 @@ import 'normalize.css/normalize.css';
 import './styles/styles.scss';
 import AppRouter from './routers/AppRouter';
 import configureStore from './store/configureStore';
-import { addExpense } from './actions/expenses';
+import { addExpense,removeExpense } from './actions/expenses';
 import { setTextFilter } from './actions/filters';
 import getVisibleExpenses from './selectors/expenses';
 
 const store = configureStore();
 store.dispatch(addExpense({ description : 'Water Bill'}));
-store.dispatch(addExpense({ description : 'Gas Bill'}));
+const id = store.dispatch(addExpense({ description : 'Gas Bill'})).expense.id;
+store.dispatch(removeExpense({ id }));
 store.dispatch(setTextFilter("bill"));
 const state = store.getState();
 const visibleExpense = getVisibleExpenses(state.expenses, state.filters);
 console.log(visibleExpense);
-
+console.log(store.getState());
 ReactDOM.render(<AppRouter />,document.getElementById("appRoot"));
