@@ -10,8 +10,9 @@ export default class ExpenseForm extends React.Component{
         description : '',
         note : '',
         amount : '',
-        createAt : moment(),
-        calendarFocused : false
+        createdAt : moment(),
+        calendarFocused : false,
+        error : ''
     }
 
     onDescriptionChange = (e) => {
@@ -24,8 +25,8 @@ export default class ExpenseForm extends React.Component{
 
     onAmountChange = (e) => {
         const amount = e.target.value;
-        const regex = /^\d*(\.\d{0,2})?$/;
-        if(amount.match(regex))
+        const regex = /^\d{1,}(\.\d{0,2})?$/;
+        if(!amount || amount.match(regex))
         this.setState( () => ({
             amount
         }));
@@ -40,14 +41,35 @@ export default class ExpenseForm extends React.Component{
         console.log(this.state);
     } 
 
-    onDateChange = createAt => this.setState({ createAt });
+    onDateChange = createdAt => {
+        if(createdAt){
+            this.setState({ createdAt });
+        }
+    }
 
+    onSubmit = (e) => {
+        e.preventDefault();
+        if(!this.state.description || !this.state.amount){
+            const error = "Please provide a description and amount";
+            this.setState( () => ({ error }));
+        } else {
+            this.setState( () => ({error : ''}));
+        }
+        this.props.onSubmit({
+            description : this.state.description,
+            amount : parseFloat(this.state.amount, 10) * 100,
+            createdAt : this.state.createdAt.valueOf(),
+            note : this.state.note
+        })
+
+    }
     onFocusChange = ({ focused }) => this.setState({ calendarFocused : focused });
 
     render(){
         return (
             <div>
-                <form>
+                {this.state.error &&<p style={{color : "red"}}>{this.state.error}</p>}
+                <form onSubmit={this.onSubmit}>
                     <input 
                         type="text"
                         placeholder="Description"
@@ -61,7 +83,7 @@ export default class ExpenseForm extends React.Component{
                         onChange={this.onAmountChange} />
                     <br />
                     <SingleDatePicker
-                        date={this.state.createAt} // momentPropTypes.momentObj or null
+                        date={this.state.createdAt} // momentPropTypes.momentObj or null
                         onDateChange={this.onDateChange} // PropTypes.func.isRequired
                         focused={this.state.calendarFocused} // PropTypes.bool
                         onFocusChange={this.onFocusChange} // PropTypes.func.isRequired

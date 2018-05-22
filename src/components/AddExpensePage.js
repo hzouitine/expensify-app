@@ -3,7 +3,11 @@ import ExpenseForm from './ExpenseForm';
 const AddExpensePage = () => (
     <div>
     AddExpensePage Componenet
-    <ExpenseForm />
+    <ExpenseForm 
+    onSubmit = {(expense) => {
+        console.log(expense);
+    }}
+    />
     </div>
 );
 
