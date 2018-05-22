@@ -7,15 +7,17 @@ import 'normalize.css/normalize.css';
 import './styles/styles.scss';
 import AppRouter from './routers/AppRouter';
 import configureStore from './store/configureStore';
-import { addExpense,removeExpense } from './actions/expenses';
+import { addExpense,removeExpense,editExpense } from './actions/expenses';
 import { setTextFilter, sortByAmount } from './actions/filters';
 import getVisibleExpenses from './selectors/expenses';
 
 const store = configureStore();
-store.dispatch(addExpense({ description : 'Water Bill', amount : 1000}));
+let id = store.dispatch(addExpense({ description : 'Water Bill', amount : 1000})).expense.id;
+store.dispatch(editExpense(id, { updates : { description : 'Water Bill !'}}));
+
 store.dispatch(addExpense({ description : 'Rent', amount : 44, createdAt : 121299}));
 store.dispatch(sortByAmount());
-const id = store.dispatch(addExpense({ description : 'Gas Bill'})).expense.id;
+id = store.dispatch(addExpense({ description : 'Gas Bill'})).expense.id;
 store.dispatch(removeExpense({ id }));
 store.dispatch(setTextFilter("bill"));
 const state = store.getState();
